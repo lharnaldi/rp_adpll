@@ -32,47 +32,6 @@ apply_bd_automation -rule xilinx.com:bd_rule:processing_system7 -config {
 # Create proc_sys_reset
 cell xilinx.com:ip:proc_sys_reset:5.0 rst_0
 
-# Create xlconstant
-cell xilinx.com:ip:xlconstant:1.1 const_0
-
-# Create xlconstant
-#cell xilinx.com:ip:xlconstant:1.1 const_1 {
-#  CONST_WIDTH 32
-#  CONST_VAL 503316480
-#}
-
-# Create xlconstant k_p constant
-cell xilinx.com:ip:xlconstant:1.1 const_2 {
-  CONST_WIDTH 32
-  CONST_VAL 2097152
-}
-
-# Create xlconstant k_i constant
-cell xilinx.com:ip:xlconstant:1.1 const_3 {
-  CONST_WIDTH 32
-  CONST_VAL 32
-}
-
-# Create xlconstant gen enable signal
-cell xilinx.com:ip:xlconstant:1.1 const_4 {
-  CONST_WIDTH 1
-  CONST_VAL 1
-}
-
-# Create xlconstant freq value constant 
-cell xilinx.com:ip:xlconstant:1.1 const_5 {
-  CONST_WIDTH 32
-  CONST_VAL 92387
-}
-
-# Create xlconstant filter time constant 
-# 2147376429 = 0.1111111111111100101110100101101
-# = 0.999949735 -> for fc=0.008e-3
-cell xilinx.com:ip:xlconstant:1.1 const_6 {
-  CONST_WIDTH 32
-  CONST_VAL 2147376429
-}
-
 # Create axi_cfg_register
 cell labdpr:user:axi_cfg_register:1.0 cfg_0 {
   CFG_DATA_WIDTH 64
@@ -81,10 +40,51 @@ cell labdpr:user:axi_cfg_register:1.0 cfg_0 {
 }
 
 # Create xlslice
-cell xilinx.com:ip:xlslice:1.0 slice_1 {
+cell xilinx.com:ip:xlslice:1.0 slice_0 {
   DIN_WIDTH 64 DIN_FROM 0 DIN_TO 0 DOUT_WIDTH 1
 } {
   Din cfg_0/cfg_data
+}
+
+# Create xlconstant
+#cell xilinx.com:ip:xlconstant:1.1 const_0
+
+# Create xlconstant
+#cell xilinx.com:ip:xlconstant:1.1 const_1 {
+#  CONST_WIDTH 32
+#  CONST_VAL 503316480
+#}
+
+# Create xlconstant k_p constant
+cell xilinx.com:ip:xlconstant:1.1 const_0 {
+  CONST_WIDTH 32
+  CONST_VAL 2097152
+}
+
+# Create xlconstant k_i constant
+cell xilinx.com:ip:xlconstant:1.1 const_1 {
+  CONST_WIDTH 32
+  CONST_VAL 32
+}
+
+# Create xlconstant gen enable signal
+cell xilinx.com:ip:xlconstant:1.1 const_2 {
+  CONST_WIDTH 1
+  CONST_VAL 1
+}
+
+# Create xlconstant freq value constant 
+cell xilinx.com:ip:xlconstant:1.1 const_3 {
+  CONST_WIDTH 32
+  CONST_VAL 92387
+}
+
+# Create xlconstant filter time constant 
+# 2147376429 = 0.1111111111111100101110100101101
+# = 0.999949735 -> for fc=0.008e-3
+cell xilinx.com:ip:xlconstant:1.1 const_4 {
+  CONST_WIDTH 32
+  CONST_VAL 2147376429
 }
 
 # Create xlslice
@@ -122,11 +122,11 @@ cell labdpr:user:axis_adpll:1.0 adpll_0 {
  ADC_DATA_WIDTH 14
 } {
  aclk pll_0/clk_out1
- aresetn const_0/dout 
- kp_i const_2/dout
- ki_i const_3/dout
- gen_en_i const_4/dout
- freq_i const_5/dout
+ aresetn slice_0/Dout 
+ kp_i const_0/dout
+ ki_i const_1/dout
+ gen_en_i const_2/dout
+ freq_i const_3/dout
  locked_o led_o
 }
 
@@ -155,7 +155,7 @@ cell xilinx.com:ip:axis_broadcaster:1.1 bcast_0 {
 } {
   S_AXIS adc_0/M_AXIS
   aclk pll_0/clk_out1
-  aresetn const_0/dout
+  aresetn slice_0/dout
 }
 
 # Create axis_broadcaster
@@ -169,7 +169,7 @@ cell xilinx.com:ip:axis_broadcaster:1.1 bcast_1 {
 } {
   S_AXIS bcast_0/M00_AXIS
   aclk pll_0/clk_out1
-  aresetn const_0/dout
+  aresetn slice_0/Dout
 }
 
 # Create zero_crossing_det
@@ -178,7 +178,7 @@ cell labdpr:user:axis_zero_crossing_det:1.0 zcd_0 {
   AXIS_TDATA_WIDTH 32
 } {
   aclk pll_0/clk_out1
-  aresetn const_0/dout 
+  aresetn slice_0/Dout 
   S_AXIS bcast_0/M01_AXIS
   det_b_o adpll_0/ref_i 
 }
@@ -192,7 +192,7 @@ cell xilinx.com:ip:axis_subset_converter:1.1 asc_0 {
   TDATA_REMAP {16'b0000000000000000,tdata[15:0]}
 } {
   aclk pll_0/clk_out1
-  aresetn const_0/dout 
+  aresetn slice_0/Dout 
   S_AXIS bcast_1/M00_AXIS
 }
 
@@ -205,7 +205,7 @@ cell xilinx.com:ip:axis_subset_converter:1.1 asc_1 {
   TDATA_REMAP {16'b0000000000000000,tdata[15:0]}
 } {
   aclk pll_0/clk_out1
-  aresetn const_0/dout 
+  aresetn slice_0/Dout 
   S_AXIS bcast_1/M01_AXIS
 }
 
@@ -220,7 +220,7 @@ cell xilinx.com:ip:axis_broadcaster:1.1 bcast_2 {
 } {
   S_AXIS adpll_0/M_AXIS
   aclk pll_0/clk_out1
-  aresetn const_0/dout
+  aresetn slice_0/Dout
 }
 
 # Create axis_subset_converter
@@ -232,7 +232,7 @@ cell xilinx.com:ip:axis_subset_converter:1.1 asc_2 {
   TDATA_REMAP {16'b0000000000000000,tdata[15:0]}
 } {
   aclk pll_0/clk_out1
-  aresetn const_0/dout 
+  aresetn slice_0/Dout 
   S_AXIS bcast_2/M00_AXIS
 }
 
@@ -245,7 +245,7 @@ cell xilinx.com:ip:axis_subset_converter:1.1 asc_3 {
   TDATA_REMAP {16'b0000000000000000,tdata[15:0]}
 } {
   aclk pll_0/clk_out1
-  aresetn const_0/dout 
+  aresetn slice_0/Dout 
   S_AXIS bcast_2/M01_AXIS
 }
 
@@ -277,7 +277,7 @@ cell xilinx.com:ip:axis_subset_converter:1.1 asc_4 {
   TDATA_REMAP {tdata[31:0]}
 } {
   aclk pll_0/clk_out1
-  aresetn const_0/dout 
+  aresetn slice_0/Dout 
   S_AXIS cmpy_0/M_AXIS_DOUT
 }
 
@@ -290,7 +290,7 @@ cell xilinx.com:ip:axis_subset_converter:1.1 asc_5 {
   TDATA_REMAP {tdata[31:0]}
 } {
   aclk pll_0/clk_out1
-  aresetn const_0/dout 
+  aresetn slice_0/Dout 
   S_AXIS cmpy_1/M_AXIS_DOUT
 }
 
@@ -319,15 +319,17 @@ cell xilinx.com:ip:axis_subset_converter:1.1 asc_5 {
 # Create axis_lpf
 cell labdpr:user:axis_lpf:1.0 lpf_0 {} {
   aclk pll_0/clk_out1
-  aresetn const_0/dout
-  tc_i const_6/dout
+  aresetn slice_0/Dout
+  tc_i const_4/dout
+  S_AXIS asc_4/M_AXIS
 }
 
 # Create axis_lpf
 cell labdpr:user:axis_lpf:1.0 lpf_1 {} {
   aclk pll_0/clk_out1
-  aresetn const_0/dout
-  tc_i const_6/dout
+  aresetn slice_0/Dout
+  tc_i const_4/dout
+  S_AXIS asc_5/M_AXIS
 }
 
 # Create status register
@@ -367,6 +369,25 @@ apply_bd_automation -rule xilinx.com:bd_rule:axi4 -config {
 set_property RANGE 4K [get_bd_addr_segs ps_0/Data/SEG_cfg_0_reg0]
 set_property OFFSET 0x40000000 [get_bd_addr_segs ps_0/Data/SEG_cfg_0_reg0]
 
+# Create dwidth_converter
+cell xilinx.com:ip:axis_dwidth_converter:1.1 dconv_0 {
+  S_TDATA_NUM_BYTES.VALUE_SRC USER
+  S_TDATA_NUM_BYTES 8 
+  M_TDATA_NUM_BYTES 4
+} {
+  aclk pll_0/clk_out1
+  aresetn slice_0/Dout
+}
+
+# Create combiner
+cell xilinx.com:ip:axis_combiner:1.1 comb_0 {} {
+  aclk pll_0/clk_out1 
+  aresetn slice_0/Dout 
+  S00_AXIS lpf_0/M_AXIS
+  S01_AXIS lpf_1/M_AXIS
+  M_AXIS dconv_0/S_AXIS
+}
+
 # Create blk_mem_gen
 cell xilinx.com:ip:blk_mem_gen:8.3 bram_0 {
   MEMORY_TYPE True_Dual_Port_RAM
@@ -390,7 +411,8 @@ cell labdpr:user:axis_bram_writer:1.0 writer_0 {
 } {
   BRAM_PORTA bram_0/BRAM_PORTA
   aclk pll_0/clk_out1
-  aresetn slice_1/Dout
+  aresetn slice_0/Dout
+  S_AXIS dconv_0/M_AXIS
 }
 
 # Create axi_bram_reader
